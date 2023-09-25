@@ -1,0 +1,34 @@
+{
+    "Certificate": {
+        "SerialNumber": "0x1",
+        "Subject": {
+            "C": "FR",
+            "ST": "France",
+            "O": "do.inc",
+            "CN": "SUBCA"
+        },
+        "Validity": {
+            "NotBefore": "2023-08-27 10:55:13",
+            "NotAfter": "2023-11-25 10:55:13"
+        },
+        "Issuer": {
+            "C": "FR",
+            "ST": "France",
+            "O": "do.inc",
+            "CN": "CA"
+        },
+        "Extension": {
+            "CA": true
+        },
+        "PublicKey": {
+            "Algorithm": "rsaEncryption",
+            "Size": "2048 bits",
+            "Modulus": "0xdcb402669dbd6eba97595dcc55d488f204b80fc3263d46bcd58b856bdeb6074742431995b20fd3635899c5b0e2c8db20825ebeab85806c42b3353c6e9ec7ae3785e5ab40808afea0035da067688c33dff788630e9b71db27a3049cf7d23dfef7638889075659f1588cee704e9550dbc0edc4b01bc7f8c03d194c32fb263833bebe7bb4059635e3b142654ba90a023709e8891295965b0f85fe177b031b4a417d038e745891e23616118ad7e7695aefd0c35e7c78e2fa98c8caafa1e569e6c30c67f7ef19bffeaf9d1292999fea8eb0ccdc3a954ac9649f5d6f94cba85c27af502907ebaf4e3d71790c1d113c4fc38f6c622bb2185187aef87b947e111548eb5d",
+            "PublicExp": "0x10001"
+        }
+    },
+    "Signature": {
+        "SignatureAlgorithm": "SHA256",
+        "SignatureValue": "0x609aae61e0424deddb0e8af36385b8f0a0a6b0bd258b5b6736669f2e68b5e59d24d964fca87b7fbddbf96362def282b9fdde4d2c882baab5c824c022ec72a0623d88c1bf5163219b0450cf0ee159e977f6659b1f4f2eb77d92eba455bc07c3651365b11a4ef660d117ffb48f2b6b39ae6a79348f4c689ba82c9964d22544357d5175d9f20df5d02e799569096a2781a6610da36d8735e99a6d8da3b6c659ce5af59bdb9bc1bca9f541ff6d36372280d948e9e34f2baeb626186a076bccc4e1cc2773b42e1984338cd210bd6e1b50d44a30dbb8770944889add2b3837f841a6a6131dc0865535075457b56624a63ee0ddc76c508ad583fe42409d919ae2e025f8"
+    }
+}
