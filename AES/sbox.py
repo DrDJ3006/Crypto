@@ -36,24 +36,16 @@ inv_s_box = (
     0x17, 0x2B, 0x04, 0x7E, 0xBA, 0x77, 0xD6, 0x26, 0xE1, 0x69, 0x14, 0x63, 0x55, 0x21, 0x0C, 0x7D,
 )
 
-def sub_bytes(s, sbox=inv_s_box):
-    # Create a new state matrix to store the substituted values
-    new_state = [[0 for _ in range(4)] for _ in range(4)]
-    # Iterate through each byte in the state matrix
-    for row in range(4):
-        for col in range(4):
-            # Get the current byte value
-            byte = s[row][col]
+def sub_bytes(s):
+    for i in range(len(s)):
+        for j in range(len(s[i])):
+            s[i][j] = s_box[s[i][j]]
 
-            # Find the substituted byte from the S-box
-            print(byte)
-            print(sbox[byte])
-            substituted_byte = sbox[byte]
-
-            # Store the substituted byte in the new state matrix
-            new_state[row][col] = substituted_byte
-
-    return new_state
+def inv_sub_bytes(s):
+    for i in range(len(s)):
+        for j in range(len(s[i])):
+            s[i][j] = inv_s_box[s[i][j]]
+            
 
 # Input state matrix
 state = [

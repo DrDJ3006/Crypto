@@ -1,4 +1,3 @@
-from Crypto.Util.number import *
 from hashlib import sha256
 import json
 import sys
