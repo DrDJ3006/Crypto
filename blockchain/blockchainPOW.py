@@ -2,6 +2,11 @@ import hashlib
 import json
 from time import time
 from typing import Any, Dict, List, Optional
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.asymmetric import ec
+from cryptography.hazmat.primitives import serialization
+
+
 
 class Blockchain:
     def __init__(self):
@@ -45,6 +50,9 @@ last_proof = blockchain.last_block['proof']
 proof = blockchain.proof_of_work(last_proof)
 
 # Ajout d'un nouveau bloc à la blockchain
+previous_hash = blockchain.hash(blockchain.last_block)
+block = blockchain.new_block(proof, previous_hash)
+
 previous_hash = blockchain.hash(blockchain.last_block)
 block = blockchain.new_block(proof, previous_hash)
 

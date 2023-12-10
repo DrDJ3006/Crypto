@@ -46,9 +46,4 @@ def generate_primes(numbits):
         prime1 = generate_prime(int(numbits/2))
         prime2 = generate_prime(int(numbits/2))
         product=prime1*prime2
-    return(prime1,prime2)
-
-p,q=generate_primes(int(sys.argv[1]))
-print(f'{p}')
-print(f'{q}')
-print(f'{p*q}={p}*{q}')
+    return(prime1,prime2,product)
