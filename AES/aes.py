@@ -1,6 +1,18 @@
+import hashlib
+import hmac
 class Aes:
-    def __init__(self,N_ROUNDS = 14):
-        self.n_rounds = N_ROUNDS
+    def __init__(self, key_size):        
+        if key_size == 128 :
+            self.key_bytes_size = 16
+            self.n_rounds = 10
+        elif key_size == 192 :
+            self.key_bytes_size = 24
+            self.n_rounds = 12
+        elif key_size == 256 :
+            self.key_bytes_size = 32
+            self.n_rounds = 14
+        else:
+            raise ValueError("Invalid key size: key size must be 128, 192, or 256 bits")
         self.s_box = (
             0x63, 0x7C, 0x77, 0x7B, 0xF2, 0x6B, 0x6F, 0xC5, 0x30, 0x01, 0x67, 0x2B, 0xFE, 0xD7, 0xAB, 0x76, 0xCA, 0x82, 0xC9, 0x7D, 0xFA, 0x59, 0x47, 0xF0, 0xAD, 0xD4, 0xA2, 0xAF, 0x9C, 0xA4, 0x72, 0xC0,
             0xB7, 0xFD, 0x93, 0x26, 0x36, 0x3F, 0xF7, 0xCC, 0x34, 0xA5, 0xE5, 0xF1, 0x71, 0xD8, 0x31, 0x15, 0x04, 0xC7, 0x23, 0xC3, 0x18, 0x96, 0x05, 0x9A, 0x07, 0x12, 0x80, 0xE2, 0xEB, 0x27, 0xB2, 0x75,
@@ -29,8 +41,9 @@ class Aes:
         )
 
     def expand_key(self, master_key):
-        if len(master_key) != 16:
-            raise ValueError("Master key must be exactly 16 bytes")
+        print(f'{len(master_key)} != {self.key_bytes_size}')
+        if len(master_key) != self.key_bytes_size:
+            raise ValueError(f"Master key must be exactly {self.key_bytes_size} bytes")
         key_columns = self.bytes2matrix(master_key)
         iteration_size = len(master_key) // 4
         i = 1
@@ -103,3 +116,106 @@ class Aes:
     
     def xtime(self,a):
         return ((a << 1) ^ 0x1B if a & 0x80 else a << 1) & 0xFF
+
+    def shift_rows(self, s):
+        s[0][1], s[1][1], s[2][1], s[3][1] = s[1][1], s[2][1], s[3][1], s[0][1]
+        s[0][2], s[1][2], s[2][2], s[3][2] = s[2][2], s[3][2], s[0][2], s[1][2]
+        s[0][3], s[1][3], s[2][3], s[3][3] = s[3][3], s[0][3], s[1][3], s[2][3]
+        return s
+
+    def inv_shift_rows(self,s):
+        s[0][1], s[1][1], s[2][1], s[3][1] = s[3][1], s[0][1], s[1][1], s[2][1]
+        s[0][2], s[1][2], s[2][2], s[3][2] = s[2][2], s[3][2], s[0][2], s[1][2]
+        s[0][3], s[1][3], s[2][3], s[3][3] = s[1][3], s[2][3], s[3][3], s[0][3]
+        return s
+    
+    def encrypt(self, key, plaintext):
+        round_keys = self.expand_key(key)
+        state = self.bytes2matrix(plaintext)
+        self.add_round_key(state,round_keys[0])
+        for i in range(1, self.n_rounds):
+            self.sub_bytes(state)
+            self.shift_rows(state)
+            self.mix_columns(state)
+            self.add_round_key(state,round_keys[i]) 
+        self.sub_bytes(state)
+        self.shift_rows(state)
+        self.add_round_key(state,round_keys[self.n_rounds])
+        ciphertext = self.matrix2bytes(state)
+        return ciphertext
+
+    def decrypt(self, key, ciphertext):
+        round_keys = self.expand_key(key) # Remember to start from the last round key and work backwards through them when decrypting
+
+        # Convert ciphertext to state matrix
+        state = self.bytes2matrix(ciphertext)
+        # Initial add round key step
+        self.add_round_key(state,round_keys[self.n_rounds])
+        for i in range(self.n_rounds - 1, 0, -1):
+            self.inv_shift_rows(state)
+            self.inv_sub_bytes(state)
+            self.add_round_key(state,round_keys[i])
+            self.inv_mix_columns(state)
+        
+        # Run final round (skips the InvMixColumns step)
+        self.inv_shift_rows(state)
+        self.inv_sub_bytes(state)
+        self.add_round_key(state,round_keys[0])
+        # Convert state matrix to plaintext
+        plaintext = self.matrix2bytes(state)
+
+        return plaintext
+    
+hash_function = hashlib.sha256
+
+def hmac_digest(key: bytes, data: bytes) -> bytes:
+    return hmac.new(key, data, hash_function).digest()
+
+
+def hkdf_extract(salt: bytes, ikm: bytes) -> bytes:
+    if len(salt) == 0:
+        salt = bytes([0] * hash_function().digest_size)
+    return hmac_digest(salt, ikm)
+
+
+def hkdf_expand(prk: bytes, info: bytes, length: int) -> bytes:
+    t = b""
+    okm = b""
+    i = 0
+    while len(okm) < length:
+        i += 1
+        t = hmac_digest(prk, t + info + bytes([i]))
+        okm += t
+    return okm[:length]
+
+
+def hkdf(ikm: bytes, length: int, salt: bytes = b'',  info: bytes = b'') -> bytes:
+    prk = hkdf_extract(salt, ikm)
+    return hkdf_expand(prk, info, length)
+
+
+def add_pkcs7_padding(data, block_size=16):
+    padding_length = block_size - (len(data) % block_size)
+    padding = bytes([padding_length] * padding_length)
+    padded_data = data + padding
+    return padded_data
+
+def remove_pkcs7_padding(data):
+    # Vérifier s'il y a au moins 16 octets dans la donnée
+    if len(data) < 16:
+        return data  # Pas assez de données pour retirer le padding
+    # Extrait le dernier bloc de 16 octets
+    last_block = data[-16:]
+    # Récupérer la valeur du padding_byte
+    padding_byte = last_block[-1]
+    # Vérifier que le padding_byte est dans la plage 1-16
+    if padding_byte > 0 and padding_byte <= 16:
+        # Vérifier que les octets de padding sont corrects
+        for i in range(padding_byte):
+            if last_block[-i-1] != padding_byte:
+                return data  # Le padding est incorrect
+        # Si le padding est correct, retirer le padding du dernier bloc
+        last_block = last_block[:-padding_byte]
+        # Remplacer le dernier bloc dans la donnée d'origine
+        return data[:-16] + last_block
+    return data  # Pas de padding détecté
