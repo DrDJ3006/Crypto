@@ -1,9 +1,0 @@
-self.bit_size = byte_length
-        self.prime1, self.prime2, self.mod = generate_primes(byte_length)
-        if self.mod < public_exp:
-            raise ValueError("Public exponent too large.")
-        if not is_probably_prime(public_exp):
-            raise ValueError("Public exponent is not prime.")
-        self.public_exp = public_exp
-        self.phi = (self.prime1 - 1) * (self.prime2 - 1)
-        self.private_exp = pow(self.public_exp, -1, self.phi)

@@ -58,7 +58,7 @@ class Vector:
         return orthogonal_vectors
     
     @staticmethod
-    def is_orthogonal(vectors):
+    def is_orthogonal(*vectors):
         if len(vectors) < 2:
             return True  # Single vector is considered orthogonal to itself
 
