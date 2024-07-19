@@ -132,7 +132,7 @@ def expand_key(master_key):
     return [key_columns[4*i : 4*(i+1)] for i in range(len(key_columns) // 4)]
 
 
-def encrypt(key, plaintext):
+def encrypt_block(key, plaintext):
     round_keys = expand_key(key)
     state = bytes2matrix(plaintext)
     add_round_key(state,round_keys[0])
@@ -151,7 +151,7 @@ def encrypt(key, plaintext):
     return ciphertext
 
 
-def decrypt(key, ciphertext):
+def decrypt_block(key, ciphertext):
     round_keys = expand_key(key) # Remember to start from the last round key and work backwards through them when decrypting
 
     # Convert ciphertext to state matrix
@@ -201,12 +201,14 @@ def remove_pkcs7_padding(data):
     return data  # Pas de padding détecté
 
 
-def aes_ecb_encrypt(key,plain_text):
-    data=add_pkcs7_padding(plain_text)
-    return b''.join([encrypt(key,data[i:i+16]) for i in range(0,len(data),16)])
+    def encrypt(key,plain_text,enc_type="ecb"):
+        data=add_pkcs7_padding(plain_text)
+        if enc_type == "ecb":
+            return b''.join([encrypt(key,data[i:i+16]) for i in range(0,len(data),16)])
 
-def aes_ecb_decrypt(key,cipher_text):
-    return remove_pkcs7_padding(b''.join([decrypt(key,cipher_text[i:i+16]) for i in range(0,len(cipher_text),16)]))
+    def decrypt(key,cipher_text,enc_type="ecb"):
+        if enc_type == "ecb":
+            return remove_pkcs7_padding(b''.join([decrypt(key,cipher_text[i:i+16]) for i in range(0,len(cipher_text),16)]))
 
 
 def xor(plain_text,vector):

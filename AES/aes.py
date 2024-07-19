@@ -1,5 +1,6 @@
 import hashlib
 import hmac
+import os
 class Aes:
     def __init__(self, key_size):        
         if key_size == 128 :
@@ -40,14 +41,11 @@ class Aes:
             0xD4, 0xB3, 0x7D, 0xFA, 0xEF, 0xC5, 0x91, 0x39,
         )
 
-    def expand_key(self, master_key):
-        print(f'{len(master_key)} != {self.key_bytes_size}')
-        if len(master_key) != self.key_bytes_size:
-            raise ValueError(f"Master key must be exactly {self.key_bytes_size} bytes")
+    def expand_key(self,master_key):
         key_columns = self.bytes2matrix(master_key)
         iteration_size = len(master_key) // 4
         i = 1
-        while len(key_columns) < (self.n_rounds  + 1) * 4:
+        while len(key_columns) < (self.n_rounds + 1) * 4:
             word = list(key_columns[-1])
             if len(key_columns) % iteration_size == 0:
                 word.append(word.pop(0))
@@ -60,11 +58,16 @@ class Aes:
             key_columns.append(word)
 
         return [key_columns[4*i : 4*(i+1)] for i in range(len(key_columns) // 4)]
+
     
     def bytes2matrix(self, data: bytes):
-        # Check if the data is exactly 16 bytes
-        if len(data) != 16:
-            raise ValueError("Data must be exactly 16 bytes")
+        # Check if the data length is 16, 24, or 32 bytes
+        if len(data) not in (16, 24, 32):
+            raise ValueError("Data must be 16, 24, or 32 bytes long")
+        
+        # Determine the number of columns in the matrix
+        columns = len(data) // 4
+        
         # Convert bytes to matrix
         return [list(data[i:i+4]) for i in range(0, len(data), 4)]
     
@@ -129,7 +132,7 @@ class Aes:
         s[0][3], s[1][3], s[2][3], s[3][3] = s[1][3], s[2][3], s[3][3], s[0][3]
         return s
     
-    def encrypt(self, key, plaintext):
+    def encrypt_block(self, key, plaintext):
         round_keys = self.expand_key(key)
         state = self.bytes2matrix(plaintext)
         self.add_round_key(state,round_keys[0])
@@ -144,7 +147,7 @@ class Aes:
         ciphertext = self.matrix2bytes(state)
         return ciphertext
 
-    def decrypt(self, key, ciphertext):
+    def decrypt_block(self, key, ciphertext):
         round_keys = self.expand_key(key) # Remember to start from the last round key and work backwards through them when decrypting
 
         # Convert ciphertext to state matrix
@@ -165,6 +168,45 @@ class Aes:
         plaintext = self.matrix2bytes(state)
 
         return plaintext
+    
+    def encrypt(self, key, plain_text, enc_mod="ecb", initial_vector=None):
+        if len(key) != self.key_bytes_size:
+            key = hkdf(key, self.key_bytes_size)
+        data = add_pkcs7_padding(plain_text)
+        if enc_mod == "ecb":
+            return b''.join([self.encrypt_block(key, data[i:i+16]) for i in range(0, len(data), 16)])
+        if enc_mod == "cbc":
+            if initial_vector is None:
+                initial_vector = os.urandom(16)
+            cipher_text = b''
+            vector = initial_vector
+            for i in range(0, len(data), 16):
+                data_entry = xor(data[i:i+16], vector)
+                encrypted_block = self.encrypt_block(key, data_entry)
+                cipher_text += encrypted_block
+                vector = encrypted_block
+            return initial_vector+cipher_text
+        
+    def decrypt(self, key, cipher_text, enc_mod="ecb"):
+        if len(key) != self.key_bytes_size:
+            key = hkdf(key, self.key_bytes_size)
+        
+        if enc_mod == "ecb":
+            return remove_pkcs7_padding(
+                b''.join([self.decrypt_block(key, cipher_text[i:i+16]) for i in range(0, len(cipher_text), 16)])
+            )
+        
+        if enc_mod == "cbc":
+            initial_vector = cipher_text[:16]
+            cipher_text = cipher_text[16:]
+            plain_text = b''
+            vector = initial_vector
+            for i in range(0, len(cipher_text), 16):
+                decrypted_block = self.decrypt_block(key, cipher_text[i:i+16])
+                plain_text += xor(decrypted_block, vector)
+                vector = cipher_text[i:i+16]
+            return remove_pkcs7_padding(plain_text)
+        
     
 hash_function = hashlib.sha256
 
@@ -219,3 +261,7 @@ def remove_pkcs7_padding(data):
         # Remplacer le dernier bloc dans la donnée d'origine
         return data[:-16] + last_block
     return data  # Pas de padding détecté
+
+
+def xor(plain_text,vector):
+    return bytes([a ^ b for a, b in zip(list(plain_text), list(vector))])
