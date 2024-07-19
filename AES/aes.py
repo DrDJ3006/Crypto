@@ -1,6 +1,7 @@
 import hashlib
 import hmac
 import os
+import sys
 class Aes:
     def __init__(self, key_size):        
         if key_size == 128 :
@@ -185,6 +186,7 @@ class Aes:
                 encrypted_block = self.encrypt_block(key, data_entry)
                 cipher_text += encrypted_block
                 vector = encrypted_block
+                print_progress_bar(i + 1, len(data))
             return initial_vector+cipher_text
         
     def decrypt(self, key, cipher_text, enc_mod="ecb"):
@@ -205,9 +207,71 @@ class Aes:
                 decrypted_block = self.decrypt_block(key, cipher_text[i:i+16])
                 plain_text += xor(decrypted_block, vector)
                 vector = cipher_text[i:i+16]
+                print_progress_bar(i + 1, len(cipher_text))
             return remove_pkcs7_padding(plain_text)
+
+    def encrypt_file(self, key, source_file, dest_file, enc_mod="cbc", initial_vector=None):
+        if len(key) != self.key_bytes_size:
+            key = hkdf(key, self.key_bytes_size)
+        if enc_mod == "cbc":
+            with open(source_file, mode="rb") as f:
+                data = add_pkcs7_padding(f.read())
+            if initial_vector is None:
+                initial_vector = os.urandom(16)
+            cipher_text = b''
+            vector = initial_vector
+            with open(dest_file, mode="wb") as df:
+                df.write(initial_vector)  # Write the initial vector at the beginning
+                for i in range(0, len(data), 16):
+                    data_entry = xor(data[i:i+16], vector)
+                    encrypted_block = self.encrypt_block(key, data_entry)
+                    cipher_text += encrypted_block
+                    vector = encrypted_block
+                    # Write every 1 KB of encrypted data to the destination file
+                    if len(cipher_text) >= 16384:
+                        df.write(cipher_text)
+                        cipher_text = b''
+                    # Print progress bar
+                    print_progress_bar(i + 16, len(data))
+                # Write any remaining cipher text
+                if cipher_text:
+                    df.write(cipher_text)
+
+    def decrypt_file(self, key, source_file, dest_file, enc_mod="cbc"):
+        if len(key) != self.key_bytes_size:
+            key = hkdf(key, self.key_bytes_size)
         
-    
+        with open(source_file, mode="rb") as f:
+            if enc_mod == "cbc":
+                initial_vector = f.read(16)  # Read the initial vector from the start of the file
+                cipher_text = f.read()
+
+        if enc_mod == "cbc":
+            decrypted_data_accumulator = b''  # To accumulate decrypted data
+            vector = initial_vector
+            with open(dest_file, mode="wb") as df:
+                for i in range(0, len(cipher_text), 16):
+                    decrypted_block = self.decrypt_block(key, cipher_text[i:i+16])
+                    decrypted_data = xor(decrypted_block, vector)
+                    decrypted_data_accumulator += decrypted_data
+                    vector = cipher_text[i:i+16]  # Update the IV to the current ciphertext block for the next block decryption
+                    print_progress_bar(i + 16, len(cipher_text))
+
+                    # Check if accumulated data has reached 2KB or if it's the final block
+                    if len(decrypted_data_accumulator) >= 16384 or i + 16 >= len(cipher_text):
+                        df.write(decrypted_data_accumulator)
+                        decrypted_data_accumulator = b''  # Reset the accumulator
+
+                # Final padding removal and writing if any residual data remains
+                final_plaintext = remove_pkcs7_padding(decrypted_data_accumulator)
+                df.write(final_plaintext)
+                
+def print_progress_bar(iteration, total, length=50):
+    percent = ("{0:.1f}").format(100 * (iteration / float(total)))
+    filled_length = int(length * iteration // total)
+    bar = '=' * filled_length +">"+ '-' * (length - filled_length - 1)
+    print(f'\r[{bar}] {percent}% Complete',flush=True,end="")
+
 hash_function = hashlib.sha256
 
 def hmac_digest(key: bytes, data: bytes) -> bytes:

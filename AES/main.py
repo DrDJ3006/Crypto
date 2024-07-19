@@ -1,12 +1,10 @@
 from aes import *
 aes = Aes(256)
-f = open(r"C:\Users\do\Downloads\Ankama Launcher-Setup.exe", mode="rb")
-data=f.read()
-f.close()
 key = b'Ma Super cle de la mort qui tue'
-ct = aes.decrypt(key,data,enc_mod="ecb")
-f = open(r"C:\Users\do\Downloads\Ankama Launcher-Setup.exe", mode="wb")
-data=f.write(ct)
-f.close()
+source = r"C:\Users\do\Documents\GitHub\Crypto\AES\DriversCloudx64_12_0_24.msi"
+dest =  r"C:\Users\do\Documents\GitHub\Crypto\AES\DriversCloudx64_12_0_24.msi.enc"
+dest2 = r"C:\Users\do\Documents\GitHub\Crypto\AES\DriversCloudx64_12_0_24_dec.msi"
+#aes.encrypt_file(key,source_file=source, dest_file=dest, enc_mod="cbc", initial_vector=None)
+aes.decrypt_file(key,source_file=dest, dest_file=dest2, enc_mod="cbc")
 
 
