@@ -52,7 +52,7 @@ aes.encrypt_file(key=b'your-file-key', source_file='path/to/source.file', dest_f
 aes.decrypt_file(key=b'your-file-key', source_file='path/to/encrypted.file.enc', dest_file='path/to/decrypted.file')
 ```
 
-### AES explanation
+### Custom AES Encryption Toolkit
 
 ``` python
 from aes_module import AES, add_pkcs7_padding, remove_pkcs7_padding ,hkdf
@@ -89,13 +89,9 @@ print(f'Decrypted data : {padded_data}')
 recovered_data = remove_pkcs7_padding(padded_data)
 print(f'Recovered data : {recovered_data}')
 ```
-## Contributing
 
-Contributions to enhance functionality or improve performance are welcome. Please ensure to maintain the coding standards and include unit tests with your submissions.
-
-## Source
-
-A big part of this module came from from [Cryptohack](https://cryptohack.org/courses/symmetric/course_details/), this code is also in parts with Chat-GPT4.
+## Source Acknowledgment
+This module incorporates significant contributions from the educational resources available on [Cryptohack](https://cryptohack.org/courses/symmetric/course_details/), an excellent platform for learning about cryptographic techniques. Additionally, parts of this code were developed with the assistance of ChatGPT-4, leveraging its capabilities to enhance functionality and ensure clarity in implementation.
 
 
 ## License
