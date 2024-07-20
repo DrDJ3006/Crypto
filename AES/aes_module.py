@@ -1,8 +1,7 @@
 import hashlib
 import hmac
 import os
-import sys
-class Aes:
+class AES:
     def __init__(self, key_size):
         valid_key_sizes = {128: (16, 10), 192: (24, 12), 256: (32, 14)}
         if key_size not in valid_key_sizes:
