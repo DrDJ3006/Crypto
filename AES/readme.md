@@ -58,12 +58,15 @@ aes.decrypt_file(key=b'your-file-key', source_file='path/to/encrypted.file.enc',
 from aes_module import AES, add_pkcs7_padding, remove_pkcs7_padding ,hkdf
 aes_key_length = 128
 aes = AES(aes_key_length)
+
 key = b'My Super Death Key that kills'
 data = b'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris eros ipsum, facilisis non neque eu, dapibus congue tortor.'
 #Add PKCS#7 padding to ensure the data's length is a multiple of the AES block size (16 bytes).
 padded_data = add_pkcs7_padding(data)
+
 #Use HKDF to derive a secure key from the initial key, with the length specified by aes_key_length / 8.
 derived_key = hkdf(key, aes_key_length//8, salt=b'',info=b'')
+
 print(f'Data after padding : {padded_data}')
 print(f'Derived key with hkdf : {derived_key.hex()}')
 
