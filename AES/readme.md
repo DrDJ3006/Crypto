@@ -4,7 +4,8 @@ This Python codebase implements the Advanced Encryption Standard (AES) encryptio
 
 ## Important Notice
 **This implementation is intended for educational and testing purposes only.** Please refrain from using this code in real-world projects or production environments.
-Befor using this code i recomand you to study AES before.
+
+Before using this code, I recommend you study AES. Below is an excellent video on the AES function of **Computerphile** that you can watch.
 
 [![Video Title](https://i3.ytimg.com/vi/O4xNJsjtN6E/hqdefault.jpg)](https://www.youtube.com/watch?v=O4xNJsjtN6E "AES explained (Advanced Encryption Standard) - Computerphile")
 
