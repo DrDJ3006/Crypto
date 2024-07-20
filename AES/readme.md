@@ -52,7 +52,7 @@ aes.encrypt_file(key=b'your-file-key', source_file='path/to/source.file', dest_f
 aes.decrypt_file(key=b'your-file-key', source_file='path/to/encrypted.file.enc', dest_file='path/to/decrypted.file')
 ```
 
-### Custom AES Encryption Toolkit
+### Custom AES Encryption/Decryption Toolkit
 
 ``` python
 from aes_module import AES, add_pkcs7_padding, remove_pkcs7_padding ,hkdf

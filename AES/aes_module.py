@@ -3,11 +3,12 @@ import hmac
 import os
 class AES:
     def __init__(self, key_size):
+        # Define valid key sizes and corresponding attributes: block size and number of encryption rounds.
         valid_key_sizes = {128: (16, 10), 192: (24, 12), 256: (32, 14)}
         if key_size not in valid_key_sizes:
             raise ValueError("Invalid key size: key size must be 128, 192, or 256 bits")
         self.key_bytes_size, self.n_rounds = valid_key_sizes[key_size]
-        
+        # S_BOX is used in the SubBytes step where each byte of the state is replaced with its corresponding value from the S_BOX.
         self.S_BOX = (
             0x63, 0x7C, 0x77, 0x7B, 0xF2, 0x6B, 0x6F, 0xC5, 0x30, 0x01, 0x67, 0x2B, 0xFE, 0xD7, 0xAB, 0x76, 0xCA, 0x82, 0xC9, 0x7D, 0xFA, 0x59, 0x47, 0xF0, 0xAD, 0xD4, 0xA2, 0xAF, 0x9C, 0xA4, 0x72, 0xC0,
             0xB7, 0xFD, 0x93, 0x26, 0x36, 0x3F, 0xF7, 0xCC, 0x34, 0xA5, 0xE5, 0xF1, 0x71, 0xD8, 0x31, 0x15, 0x04, 0xC7, 0x23, 0xC3, 0x18, 0x96, 0x05, 0x9A, 0x07, 0x12, 0x80, 0xE2, 0xEB, 0x27, 0xB2, 0x75,
@@ -18,6 +19,7 @@ class AES:
             0xBA, 0x78, 0x25, 0x2E, 0x1C, 0xA6, 0xB4, 0xC6, 0xE8, 0xDD, 0x74, 0x1F, 0x4B, 0xBD, 0x8B, 0x8A, 0x70, 0x3E, 0xB5, 0x66, 0x48, 0x03, 0xF6, 0x0E, 0x61, 0x35, 0x57, 0xB9, 0x86, 0xC1, 0x1D, 0x9E,
             0xE1, 0xF8, 0x98, 0x11, 0x69, 0xD9, 0x8E, 0x94, 0x9B, 0x1E, 0x87, 0xE9, 0xCE, 0x55, 0x28, 0xDF, 0x8C, 0xA1, 0x89, 0x0D, 0xBF, 0xE6, 0x42, 0x68, 0x41, 0x99, 0x2D, 0x0F, 0xB0, 0x54, 0xBB, 0x16,
         )
+        # INV_S_BOX is used for the inverse SubBytes step in the decryption process.
         self.INV_S_BOX = (
             0x52, 0x09, 0x6A, 0xD5, 0x30, 0x36, 0xA5, 0x38, 0xBF, 0x40, 0xA3, 0x9E, 0x81, 0xF3, 0xD7, 0xFB, 0x7C, 0xE3, 0x39, 0x82, 0x9B, 0x2F, 0xFF, 0x87, 0x34, 0x8E, 0x43, 0x44, 0xC4, 0xDE, 0xE9, 0xCB,
             0x54, 0x7B, 0x94, 0x32, 0xA6, 0xC2, 0x23, 0x3D, 0xEE, 0x4C, 0x95, 0x0B, 0x42, 0xFA, 0xC3, 0x4E, 0x08, 0x2E, 0xA1, 0x66, 0x28, 0xD9, 0x24, 0xB2, 0x76, 0x5B, 0xA2, 0x49, 0x6D, 0x8B, 0xD1, 0x25,
@@ -28,6 +30,7 @@ class AES:
             0x1F, 0xDD, 0xA8, 0x33, 0x88, 0x07, 0xC7, 0x31, 0xB1, 0x12, 0x10, 0x59, 0x27, 0x80, 0xEC, 0x5F, 0x60, 0x51, 0x7F, 0xA9, 0x19, 0xB5, 0x4A, 0x0D, 0x2D, 0xE5, 0x7A, 0x9F, 0x93, 0xC9, 0x9C, 0xEF,
             0xA0, 0xE0, 0x3B, 0x4D, 0xAE, 0x2A, 0xF5, 0xB0, 0xC8, 0xEB, 0xBB, 0x3C, 0x83, 0x53, 0x99, 0x61, 0x17, 0x2B, 0x04, 0x7E, 0xBA, 0x77, 0xD6, 0x26, 0xE1, 0x69, 0x14, 0x63, 0x55, 0x21, 0x0C, 0x7D,
         )
+        # R_CON contains constants used during the key expansion process.
         self.R_CON = (
             0x00, 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40,
             0x80, 0x1B, 0x36, 0x6C, 0xD8, 0xAB, 0x4D, 0x9A,
@@ -36,18 +39,19 @@ class AES:
         )
 
     def expand_key(self,master_key):
+        # Expand the initial cipher key into several round keys for use in each round of the AES algorithm.
         key_columns = self.bytes2matrix(master_key)
         iteration_size = len(master_key) // 4
         i = 1
         while len(key_columns) < (self.n_rounds + 1) * 4:
             word = list(key_columns[-1])
             if len(key_columns) % iteration_size == 0:
-                word.append(word.pop(0))
-                word = [self.S_BOX[b] for b in word]
-                word[0] ^= self.R_CON[i]
+                word.append(word.pop(0)) # Rotate the word
+                word = [self.S_BOX[b] for b in word]  # Substitute using S_BOX
+                word[0] ^= self.R_CON[i]  # XOR with round constant
                 i += 1
             elif len(master_key) == 32 and len(key_columns) % iteration_size == 4:
-                word = [self.S_BOX[b] for b in word]
+                word = [self.S_BOX[b] for b in word]  # Only for 256-bit keys
             word = bytes(i^j for i, j in zip(word, key_columns[-iteration_size]))
             key_columns.append(word)
 
@@ -55,7 +59,7 @@ class AES:
 
     
     def bytes2matrix(self, data: bytes):
-        # Check if the data length is 16, 24, or 32 bytes
+        # Convert a 16-byte array into a matrix format for easier manipulation during the AES algorithm.
         if len(data) not in (16, 24, 32):
             raise ValueError("Data must be 16, 24, or 32 bytes long")
         
@@ -63,6 +67,7 @@ class AES:
         return [list(data[i:i+4]) for i in range(0, len(data), 4)]
     
     def matrix2bytes(self, matrix : tuple):
+        # Convert a matrix back into a byte array after processing is done.
         byte_array = []
         for row in matrix:
             for element in row:
@@ -70,18 +75,21 @@ class AES:
         return bytes(byte_array)
     
     def sub_bytes(self, s):
+        # Substitute each byte in the state matrix with its corresponding byte in S_BOX.
         for i in range(len(s)):
             for j in range(len(s[i])):
                 s[i][j] = self.S_BOX[s[i][j]]
         return s
     
     def inv_sub_bytes(self, s):
+        # Substitute each byte in the state matrix with its corresponding byte in INV_S_BOX during decryption.
         for i in range(len(s)):
             for j in range(len(s[i])):
                 s[i][j] = self.INV_S_BOX[s[i][j]]
         return s
     
     def add_round_key(self, s, k):
+        # Perform the AddRoundKey step by XORing the state matrix with the round key matrix.
         for i in range(len(s)):
             for j in range(len(s[i])):
                 s[i][j] = (s[i][j] ^ k[i][j])
@@ -139,7 +147,7 @@ class AES:
         return ciphertext
 
     def decrypt_block(self, key, ciphertext):
-        round_keys = self.expand_key(key) # Remember to start from the last round key and work backwards through them when decrypting
+        round_keys = self.expand_key(key)
 
         # Convert ciphertext to state matrix
         state = self.bytes2matrix(ciphertext)
