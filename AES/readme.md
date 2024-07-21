@@ -33,7 +33,7 @@ This module is a standalone Python script. Ensure you have Python installed on y
 To encrypt or decrypt data, initialize an `AES` object with the desired key size and use the `encrypt` and `decrypt` methods. For file operations, use `encrypt_file` and `decrypt_file`.
 
 ```python
-from aes_module import AES  # Ensure the script is appropriately named or adjusted for import
+from aes_module import AES
 
 # Create an AES object
 aes = AES(key_size=256) # 128 and 192-bit key is also available.
