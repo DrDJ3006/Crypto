@@ -266,7 +266,7 @@ The MixColumns step is one of the core transformations in the AES (Advanced Encr
 
 ![In the MixColumns step, each column of the state is multiplied with a fixed polynomial](https://upload.wikimedia.org/wikipedia/commons/thumb/7/76/AES-MixColumns.svg/320px-AES-MixColumns.svg.png)
 
-$ \begin{bmatrix} b_{0,1} \\ b_{1,1} \\ b_{2,1} \\ b_{3,1} \end{bmatrix} = \begin{bmatrix} 2 & 3 & 1 & 1 \\ 1 & 2 & 3 & 1 \\1 & 1 & 2 & 3 \\3 & 1 & 1 & 2 \end{bmatrix}  \begin{bmatrix} a_{0,1} \\ a_{1,1} \\ a_{2,1} \\ a_{3,1} \end{bmatrix}$
+$$ \begin{bmatrix} b_{0,1} \\ b_{1,1} \\ b_{2,1} \\ b_{3,1} \end{bmatrix} = \begin{bmatrix} 2 & 3 & 1 & 1 \\ 1 & 2 & 3 & 1 \\1 & 1 & 2 & 3 \\3 & 1 & 1 & 2 \end{bmatrix}  \begin{bmatrix} a_{0,1} \\ a_{1,1} \\ a_{2,1} \\ a_{3,1} \end{bmatrix}$$
 
 
 
