@@ -49,10 +49,10 @@ decrypted_data = aes.decrypt(key=b'your-key-here', cipher_text=encrypted_data, e
 
 ```python
 # Encrypt a file
-aes.encrypt_file(key=b'your-file-key', source_file='path/to/source.file', dest_file='path/to/dest.file.enc')
+aes.encrypt_file(key=b'your-key-here', source_file='path/to/source.file', dest_file='path/to/dest.file.enc')
 
 # Decrypt a file
-aes.decrypt_file(key=b'your-file-key', source_file='path/to/encrypted.file.enc', dest_file='path/to/decrypted.file')
+aes.decrypt_file(key=b'your-key-here', source_file='path/to/encrypted.file.enc', dest_file='path/to/decrypted.file')
 ```
 
 ### Custom AES Encryption/Decryption Toolkit
