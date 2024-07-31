@@ -103,12 +103,12 @@ Below is an excellent video on the AES function of **Computerphile** that you ca
 ### AES Data Structure
 AES is a variant of Rijndael, with a fixed block size of 128 bits, and a key size of 128, 192, or 256 bits. AES operates on a 4 × 4 column-major order array of 16 bytes [b0,b1,b2,... ,b15] $ termed *"The state"*.
 
-Matrix representation:
+```
     [b0  b4  b8  b12]
     [b1  b5  b9  b13]
     [b2  b6  b10 b14]
     [b3  b7  b11 b15]
-
+```
 
 In this code we use function to convert bytes to matrix of 4 × 4 column-major of 1 byte each :
 
