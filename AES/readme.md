@@ -101,7 +101,7 @@ Below is an excellent video on the AES function of **Computerphile** that you ca
 [![Video Title](https://i3.ytimg.com/vi/O4xNJsjtN6E/hqdefault.jpg)](https://www.youtube.com/watch?v=O4xNJsjtN6E "AES explained (Advanced Encryption Standard) - Computerphile")
 
 ### AES Data Structure
-AES is a variant of Rijndael, with a fixed block size of 128 bits, and a key size of 128, 192, or 256 bits. AES operates on a 4 × 4 column-major order array of 16 bytes [b0,b1,b2,... ,b15] $ termed *"The state"*.
+AES is a variant of Rijndael, with a fixed block size of 128 bits, and a key size of 128, 192, or 256 bits. AES operates on a 4 × 4 column-major order array of 16 bytes [b0,b1,b2,... ,b15] termed *"The state"*.
 
 ```
     [b0  b4  b8   b12]
@@ -270,7 +270,13 @@ The MixColumns step is one of the core transformations in the AES (Advanced Encr
 
 ![In the MixColumns step, each column of the state is multiplied with a fixed polynomial](https://upload.wikimedia.org/wikipedia/commons/thumb/7/76/AES-MixColumns.svg/320px-AES-MixColumns.svg.png)
 
-$$ \begin{bmatrix} b_{0,1} \\ b_{1,1} \\ b_{2,1} \\ b_{3,1} \end{bmatrix} = \begin{bmatrix} 2 & 3 & 1 & 1 \\ 1 & 2 & 3 & 1 \\1 & 1 & 2 & 3 \\3 & 1 & 1 & 2 \end{bmatrix}  \begin{bmatrix} a_{0,1} \\ a_{1,1} \\ a_{2,1} \\ a_{3,1} \end{bmatrix}$$
+```
+    [b0,1]   [2 3 1 1]   [a0,1]
+    [b1,1]   [1 2 3 1]   [a1,1]
+    [b2,1] = [1 1 2 3] * [a2,1]
+    [b3,1]   [3 1 1 2]   [a3,1]
+```
+
 
 
 
