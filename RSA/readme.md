@@ -163,7 +163,7 @@ decrypted_text = convert_to_text(decrypted_int)
 To sign data, you will need $(d, n)$. Additionally, you'll use a hash function such as SHA-256.
 
 First, compute the hash of the data using a hash function:
-$ h = Hash(m)$.
+$h = Hash(m)$.
 
 Then compute the signature $s$ using the private exponent : $s \equiv h^d \pmod{n}$..
 
