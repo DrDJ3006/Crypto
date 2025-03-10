@@ -94,7 +94,7 @@ However, for simplicity, if $p$ and $q$ are distinct primes, $\lambda(n)$ can al
 $\lambda(n) = (p-1) \times (q-1)$
 (For additional details, refer to [RSA Cryptosystem on Wikipedia](https://en.wikipedia.org/wiki/RSA_(cryptosystem))).
 
-Following this, select a number $e$  that is [coprime](https://en.wikipedia.org/wiki/Coprime_integers) to $\lambda(n)$ and satisfies $ 1 < e< \lambda(n)$ . A common choice for $e$ is $65537$ due to its properties that favor efficient computation. This number is referred to as the public exponent.
+Following this, select a number $e$  that is [coprime](https://en.wikipedia.org/wiki/Coprime_integers) to $\lambda(n)$ and satisfies $1 < e< \lambda(n)$ . A common choice for $e$ is $65537$ due to its properties that favor efficient computation. This number is referred to as the public exponent.
 
 Lastly, compute a number $d$, which is the modular [modular multiplicative inverse](https://en.wikipedia.org/wiki/Modular_multiplicative_inverse) of $e$ modulo $\lambda(n)$:
 $d \equiv e^{-1} \pmod{\lambda(n)}$.
