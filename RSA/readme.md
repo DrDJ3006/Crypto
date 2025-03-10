@@ -147,7 +147,7 @@ encrypted_int = pow(int_text, public_exponent, modulus)
 #### Decryption :
 To decrypt $c$, you will need the private key $(d, n)$ and compute:
 $m \equiv c^d \pmod{n}$.
-To recover the original information, convert the number $m$ $ back into the data $M$.
+To recover the original information, convert the number $m$ back into the data $M$.
 
 ```python
 # Decrypt: message = (ciphertext^private_exponent) mod modulus.
@@ -165,7 +165,7 @@ To sign data, you will need $(d, n)$. Additionally, you'll use a hash function s
 First, compute the hash of the data using a hash function:
 $h = Hash(m)$.
 
-Then compute the signature $s$ using the private exponent : $s \equiv h^d \pmod{n}$..
+Then compute the signature $s$ using the private exponent : $s \equiv h^d \pmod{n}$.
 
 The signature is now composed of the pair $(s, m)$.
 
