@@ -81,25 +81,19 @@ print("Signature Valid:", is_valid)
 
 ## Description of RSA
 
-### Key Generation
+### Key generation
 
-To generate RSA keys, begin by randomly selecting two large prime numbers, denoted as \( p \) and \( q \). It's crucial that \( p \) and \( q \) are significantly different to mitigate certain cryptographic attacks.
+For generate key you must fisrt generate randomly two large primes numbers that we call p an q (the two primes must be large difference to prevent some attacks).
 
-Next, compute the modulus \( n \) by multiplying \( p \) and \( q \):
-\[ n = p \times q \]
+Secondly you just need to multiply those two number and get the result as n, we will call this number n the modulus :
+$n = p \times q$
 
-The next step involves computing \( \lambda(n) \), where \( \lambda \) is [Carmichael's totient function](https://en.wikipedia.org/wiki/Carmichael_function). For prime \( p \) and \( q \), \( \lambda(n) \) is calculated as:
-\[ \lambda(n) = \text{lcm}(p-1, q-1) \]
-However, for simplicity, if \( p \) and \( q \) are distinct primes, \( \lambda(n) \) can also be computed as:
-\[ \lambda(n) = (p-1) \times (q-1) \]
-(For additional details, refer to [RSA Cryptosystem on Wikipedia](https://en.wikipedia.org/wiki/RSA_(cryptosystem))).
+Now we will need **λ(n)**, where λ is [Carmichael's totient function](https://en.wikipedia.org/wiki/Carmichael_function), but since p and q are prime we juste need to compute $\lambda(n) = (p-1) \times (q-1)$ (if u need more details go check : [RSA_(cryptosystem)](https://en.wikipedia.org/wiki/RSA_(cryptosystem))).
 
-Following this, select a public exponent \( e \) that is [coprime](https://en.wikipedia.org/wiki/Coprime_integers) to \( \lambda(n) \) and satisfies \( 1 < e < \lambda(n) \). A common choice for \( e \) is 65537 due to its properties that favor efficient computation.
 
-Lastly, compute the private exponent \( d \), which is the modular [modular multiplicative inverse](https://en.wikipedia.org/wiki/Modular_multiplicative_inverse) of \( e \) modulo \( \lambda(n) \):
-\[ d \equiv e^{-1} \pmod{\lambda(n)} \]
-The [extended Euclidean algorithm](https://en.wikipedia.org/wiki/Extended_Euclidean_algorithm) is typically used to compute \( d \). This number is referred to as the private exponent.
+Next we will need a number **e** [coprime](https://en.wikipedia.org/wiki/Coprime_integers) with $\lambda(n)$ such as  $1 < e < \lambda(n)$, we will call this number the public exponent. (this number is often 65537)
 
+And finally we juste to find d such as d is the modular [modular multiplicative inverse](https://en.wikipedia.org/wiki/Modular_multiplicative_inverse) of e modulo λ(n), in math language : *$d \equiv e^{-1} \pmod{\lambda(n)}$*. We can easily find d with the [extended Euclidean algorithm](https://en.wikipedia.org/wiki/Extended_Euclidean_algorithm). We will call tha number the private exponent
 
 
 
