@@ -14,7 +14,7 @@ This repository hosts implementations of two major cryptographic standards: AES 
 
 Clone this repository using:
 ```bash
-git clone https://github.com/DrDJ3006/Crypto.git
+git clone https://github.com/DrDJ3006/Cryptography.git
 ```
 Navigate to each directory to learn more about the specific implementation and usage instructions.
 
