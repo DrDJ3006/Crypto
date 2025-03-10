@@ -70,7 +70,6 @@ class RSA:
         """
         # Convert text to an integer representation.
         int_text = convert_to_int(text)
-        
         if int_text >= modulus:
             raise ValueError("The integer representation of the text must be less than the modulus.")
         
