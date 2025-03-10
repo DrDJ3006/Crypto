@@ -203,3 +203,5 @@ This module incorporates significant contributions from the educational resource
 This project is open-sourced under the MIT license.
 
 ---
+
+Feel free to adjust the sections according to your project's needs, such as adding a section for requirements or more detailed instructions on how to set up the environment.
