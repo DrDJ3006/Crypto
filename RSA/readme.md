@@ -107,9 +107,13 @@ So, to summarize the RSA key generation process:
 - Select $e = 65537$, commonly chosen as the public exponent.
 - Cumpute $d \equiv e^{-1} \pmod{\lambda(n)}$, which is the private exponent.
 
-This is an exemple
 
+## Public and private key :
 
+### Public and Private Keys:
+
+- The **public key** consists of the pair $(e, n)$. This key can be distributed openly to anyone.
+- The **private key** consists of the pair $(d, n)$. This key must remain absolutely confidential.
 
 
 ## Source Acknowledgment
